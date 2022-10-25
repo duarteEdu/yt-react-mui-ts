@@ -1,4 +1,10 @@
-import { createContext, useCallback, useState, useMemo, useContext } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useState,
+  useMemo,
+  useContext,
+} from "react";
 import { Box, ThemeProvider } from "@mui/material";
 import { LightTheme, DarkTheme } from "./../themes";
 
@@ -8,16 +14,18 @@ interface IThemeContextData {
 }
 
 interface IThemeProviderProps {
-    children: React.ReactNode;
-  }
+  children: React.ReactNode;
+}
 
 const ThemeContext = createContext({} as IThemeContextData);
 
 export const useAppThemeContext = () => {
-    return useContext(ThemeContext);
-}
+  return useContext(ThemeContext);
+};
 
-export const AppThemeProvider: React.FC<IThemeProviderProps> = ({ children }) => {
+export const AppThemeProvider: React.FC<IThemeProviderProps> = ({
+  children,
+}) => {
   const [themeName, setThemeName] = useState<"light" | "dark">("dark");
 
   const toggleTheme = useCallback(() => {
@@ -40,7 +48,11 @@ export const AppThemeProvider: React.FC<IThemeProviderProps> = ({ children }) =>
       }}
     >
       <ThemeProvider theme={theme}>
-        <Box width={"100vw"} height={"100vh"} bgcolor={theme.palette.background.default}>
+        <Box
+          width={"100vw"}
+          height={"100vh"}
+          bgcolor={theme.palette.background.default}
+        >
           {children}
         </Box>
       </ThemeProvider>
