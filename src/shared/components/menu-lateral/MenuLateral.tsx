@@ -13,20 +13,58 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useAppDrawerContext } from "../../contexts";
+import { useMatch, useNavigate, useResolvedPath } from "react-router-dom";
 
 interface IMenu {
   children: React.ReactNode;
 }
 
+interface IListItemLinkProps {
+  to: string;
+  icon: string;
+  label: string;
+  onClick: (() => void) | undefined;
+}
+
+const ListItemLink: React.FC<IListItemLinkProps> = ({
+  to,
+  icon,
+  label,
+  onClick,
+}) => {
+  const navigate = useNavigate();
+
+  const resolvedPath = useResolvedPath(to);
+  const match = useMatch({ path: resolvedPath.pathname, end: false });
+
+  const handleClick = () => {
+    onClick && onClick();
+    navigate(to);
+  };
+
+  return (
+    <ListItemButton selected={!!match} onClick={handleClick}>
+      <ListItemIcon>
+        <Icon>{icon}</Icon>
+        <ListItemText primary={label} />
+      </ListItemIcon>
+    </ListItemButton>
+  );
+};
+
 export const MenuLateral: React.FC<IMenu> = ({ children }) => {
   const theme = useTheme();
   const smDown = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const {isDrawerOpen, toggleDrawerOpen} = useAppDrawerContext();
+  const { isDrawerOpen, toggleDrawerOpen, drawerOptions } = useAppDrawerContext();
 
   return (
     <>
-      <Drawer open={isDrawerOpen} variant={smDown ? "temporary" : "permanent"} onClose={toggleDrawerOpen}>
+      <Drawer
+        open={isDrawerOpen}
+        variant={smDown ? "temporary" : "permanent"}
+        onClose={toggleDrawerOpen}
+      >
         <Box
           width={theme.spacing(28)}
           height="100%"
@@ -51,12 +89,15 @@ export const MenuLateral: React.FC<IMenu> = ({ children }) => {
           <Divider />
           <Box flex={1}>
             <List component="nav">
-              <ListItemButton>
-                <ListItemIcon>
-                  <Icon>home</Icon>
-                  <ListItemText>Página inicial</ListItemText>
-                </ListItemIcon>
-              </ListItemButton>
+              {drawerOptions.map((option, index) => (
+                <ListItemLink
+                  key={index}
+                  icon={option.icon}
+                  label={option.label}
+                  to={option.path}
+                  onClick={smDown ? toggleDrawerOpen : undefined}
+                />
+              ))}
             </List>
           </Box>
         </Box>
